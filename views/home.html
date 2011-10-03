@@ -56,13 +56,12 @@
             $("#vs-"+vid).html(data['status_desc']);
 
             var s = data['status'];
-            if (s == 2 || s == 5 || s == 9 || s == 10 || s == 13){
+            if (s == 2 || s == 5 || s == 9 || s == 10 || s == 13) {
                $("#vs-"+vid).removeClass('processing').addClass("error"); 
-            } else if (data['status'] != 99){
+            } else if (data['status'] != 99) {
                 var eta = 10000;
-
                 if(data['status'] >= 5)
-                    eta = 30000;
+                    eta = 40000;
                 
                 setTimeout("check_status("+vid+")", eta); 
             } else {
@@ -123,12 +122,12 @@
                 {% for video in videos %}
                 <li id="v-{{ video['id'] }}">
                     <div class="video-preview">
-                        <a class="vurl" href="{% if video['tudou_id'] %}http://www.tudou.com/programs/view/{{ video['tudou_id'] }}/{% end %}#" target="_blank" >
+                        <a class="vurl" href="{% if video['tudou_id'] %}http://www.tudou.com/programs/view/{{ video['tudou_id'] }}/{%else%}#{% end %}" target="_blank" >
                             <img src="{{ video['picurl'] }}" onError="this.src='/static/images/processing.png'" title="{{ video['title'] }}" />
                         </a>
                     </div>
                     <div class="video-info">
-                        <h2><a class="vurl" href="{% if video['tudou_id'] %}http://www.tudou.com/programs/view/{{ video['tudou_id'] }}/{% end %}#" title="{{ video['title'] }}" target="_blank">{{ video['title'][:15] }}</a></h2>
+                        <h2><a class="vurl" href="{% if video['tudou_id'] %}http://www.tudou.com/programs/view/{{ video['tudou_id'] }}/{%else%}#{%end%}" title="{{ video['title'] }}" target="_blank">{{ video['title'][:15] }}</a></h2>
                         <span><a href="{{ video['source'] }}">原地址</a></span> <br />
                         <span id="vs-{{ video['id'] }}" class="{% if video['status'] not in (2, 5, 9, 10, 13, 99) %}processing{% end %}">{{ statuses[video['status']] }}</span>
                     </div>
