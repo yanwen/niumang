@@ -311,7 +311,6 @@ class UploadHandler(BaseHandler):
             # if video:
                 # return self.write("视频已存在")
             
-            #如果没有登录则提交视频需要审核
             if not self.current_user:
                 uploader = ""
             else:
@@ -366,7 +365,7 @@ class StatusHandler(BaseHandler):
     def post(self):
         """docstring for post"""
     
-        ids = self.get_argument('ids', [])
+        ids = self.get_argument('ids', None)
 
         if ids:
             cur = self.db.cursor()
@@ -381,7 +380,7 @@ class StatusHandler(BaseHandler):
 
             self.write(json.dumps(video_list))
         else:
-            self.write('')
+            self.write('error')
             
 class AuthHandler(BaseHandler, tornado.auth.GoogleMixin):
 
