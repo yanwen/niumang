@@ -61,8 +61,8 @@
     function check_status(){
 
         if(ids.length == 0){
-           timer = setTimeout("check_status()", 10000);
-           return
+            timer = null;
+            return
         }
 
         $.post("/status", {ids:ids.join(',')}, function(data){
