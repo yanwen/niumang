@@ -1,0 +1,8 @@
+*.pyc
+*.log
+.*.swp
+*.DS_Store
+*Thumbs.db
+videos
+data.sqlite
+config.py

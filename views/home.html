@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8" />
+	<title>牛芒视频搬家 - 把您喜爱的国外视频都搬回来吧!</title>
+	<link rel="stylesheet" href="/static/style.css" media="screen" type="text/css" />
+	<!--[if IE]>
+	<link href="/static/iefix.css" rel="stylesheet" type="text/css" />
+	<![endif]-->
+    <script src="/static/jquery-1.5.2.min.js" type="text/javascript"></script>
+    <script type="text/javascript" charset="utf-8">
+    $(document).ready(function(){
+        $("#video-upload-form").submit(function(){
+            var data = $(this).serialize();
+            $("#submit").val('正在添加任务，请稍候...').attr('disabled', 'disabled');
+            $.post('/upload', data, function(data){
+                if('id' in data){
+                    $("#url").val("");
+                    $("#title").val("");
+                    $("#desc").val("");
+                    $("#tags").val("");
+                    $("#channel_id option").removeAttr("selected");
+                    add_video(data)
+                } else {
+                    alert(data.error);
+                }
+                $("#submit").removeAttr('disabled').val('立即转到土豆');
+            }, 'json');
+            return false;
+        });
+
+        $(".processing").each(function(){
+            var id  = $(this).attr('id');
+            var vid = id.split('-')[1];
+            check_status(vid);
+        });
+    });
+
+    function add_video(video){
+
+        var vbox = '<li id="v-'+video['id']+'">'
+         +'  <div class="video-preview">'
+         +'   <a class="vurl" href="#" target="_blank" >'
+         +'       <img src="'+video['picurl']+'" onError="this.src=\'/static/images/processing.png\'" />'
+         +'   </a>'
+         +'   </div>'
+         +'   <div class="video-info">'
+         +'       <h2><a class="vurl" href="#" target="_blank">'+video['title']+'</a></h2>'
+         +'       <span><a href="'+video['source']+'">原地址</a></span><br />'
+         +'       <span id="vs-'+video['id']+'" class="processing"></span>'
+         +'   </div>'
+         +' </li>"';
+         $(vbox).prependTo('#video-list');
+        
+        check_status(video['id'])
+    }
+    function check_status(vid){
+        $.get("/status/"+vid, {}, function(data){
+            $("#vs-"+vid).html(data['status_desc']);
+
+            var s = data['status'];
+            if (s == 2 || s == 5 || s == 9 || s == 10 || s == 13){
+               $("#vs-"+vid).removeClass('processing').addClass("error"); 
+            } else if (data['status'] != 99){
+                var eta = 10000;
+
+                if(data['status'] >= 5)
+                    eta = 30000;
+                
+                setTimeout("check_status("+vid+")", eta); 
+            } else {
+                $("#v-"+vid+" .vurl").attr("href", "http://www.tudou.com/programs/view/"+data['tudou_id']+"/"); 
+                $("#vs-"+vid).removeClass('processing').removeClass("error");
+                $("#v-"+vid+" img").attr('src', data['picurl']);
+            }
+        }, 'json');
+    }
+    </script>
+</head>
+<body id="top">
+<div id="container">
+	<div id="header">
+		<div class="logo">Logo</div>
+	</div>
+	<div class="section_bottom_panel">
+		<div class="box590">
+			<h1>我要搬家~</h1>
+            <fieldset class="info_fieldset">
+				<div id="note"></div>
+				<form id="video-upload-form" action="javascript:void(0);" name="video-upload-form">
+                    <div class="label">视频原地址</div>
+                    <input class="textbox" type="text" id="url" name="url" value="" size="30" /><br />
+                    <div class="label">视频标题</div>
+                    <input class="textbox" type="text" id="title" name="title" value="" size="30" /><br />
+                    <div class="label">标签</div>
+                    <input class="textbox" type="text" id="tags" name="tags" value="" size="30" /><br />
+                    <div class="label">土豆频道</div>
+                    <select name="channel_id" id="channel_id">
+                        {% for channel in channels %}
+                        <option value="{{ channel[0] }}">{{ channel[1] }}</option>
+                        {% end %}
+                    </select><br />
+                    <div class="label">视频描述</div>
+                    <textarea class="textbox" id="desc" name="desc" rows="3" cols="60"></textarea>
+                    <br />
+                    <div class="label"> </div>
+                    {% raw xsrf_form_html() %}
+                    <input class="button" type="submit" id="submit" name="submit" value="立即转到土豆" />
+                </form>
+            </fieldset>
+            <h2>支持下载的国外网站：</h2>
+            <p>YouTube.com&nbsp &nbsp
+                Vimeo.com&nbsp &nbsp
+                Metacafe.com&nbsp &nbsp
+                Google Video&nbsp &nbsp
+                Yahoo! video&nbsp &nbsp
+                Dailymotion&nbsp &nbsp
+                Myvideo.de&nbsp &nbsp
+                The Daily Show / Colbert Nation.
+            </p>
+		</div>
+		<div class="box280">
+            <h1>视频列表</h1>
+            <ul class="video-list" id="video-list">
+                {% for video in videos %}
+                <li id="v-{{ video['id'] }}">
+                    <div class="video-preview">
+                        <a class="vurl" href="{% if video['tudou_id'] %}http://www.tudou.com/programs/view/{{ video['tudou_id'] }}/{% end %}#" target="_blank" >
+                            <img src="{{ video['picurl'] }}" onError="this.src='/static/images/processing.png'" title="{{ video['title'] }}" />
+                        </a>
+                    </div>
+                    <div class="video-info">
+                        <h2><a class="vurl" href="{% if video['tudou_id'] %}http://www.tudou.com/programs/view/{{ video['tudou_id'] }}/{% end %}#" title="{{ video['title'] }}" target="_blank">{{ video['title'][:15] }}</a></h2>
+                        <span><a href="{{ video['source'] }}">原地址</a></span> <br />
+                        <span id="vs-{{ video['id'] }}" class="{% if video['status'] not in (2, 5, 9, 10, 13, 99) %}processing{% end %}">{{ statuses[video['status']] }}</span>
+                    </div>
+                </li>
+                {% end %}
+            </ul>
+		</div>
+        <ul id="twitter_update_list" class="float_left"><li></li></ul>
+        <ul class="social_icons float_right">
+            <li><a href="http://www.LINK.com" class="twitter16">Twitter</a></li>
+            <li><a href="skype:USERNAME?call" class="skype16">Skype</a></li>
+            <li><a href="http://www.LINK.com" class="flickr16">Flickr</a></li>
+            <li><a href="http://www.LINK.com" class="facebook16">Facebook</a></li>
+        </ul>
+	</div>
+</div>
+</body>
+</html>
