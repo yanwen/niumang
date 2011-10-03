@@ -275,8 +275,10 @@ class HomeHandler(BaseHandler):
     def get(self):
         """docstring for get"""
         videos = self.get_videos(limit=10000)
+        total_videos = len(videos)
         self.render("home.html",
-                    videos = videos
+                    videos = videos,
+                    total_videos = total_videos
                 )
 
 class UploadHandler(BaseHandler):

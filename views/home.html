@@ -9,8 +9,9 @@
     $(document).ready(function(){
         $("#video-upload-form").submit(function(){
             var data = $(this).serialize();
-            $("#submit").val('正在添加任务，请稍候...').attr('disabled', 'disabled');
+            $("#submit").val('正在添加任务，请稍候……').attr('disabled', 'disabled');
             $.post('/upload', data, function(data){
+                $("#submit").removeAttr('disabled').val('立即转到土豆');
                 if('id' in data){
                     $("#url").val("");
                     $("#title").val("");
@@ -21,7 +22,6 @@
                 } else {
                     alert(data.error);
                 }
-                $("#submit").removeAttr('disabled').val('立即转到土豆');
             }, 'json');
             return false;
         });
@@ -118,6 +118,7 @@
 		</div>
 		<div class="box280">
             <h1>视频列表</h1>
+            {% if total_videos %}
             <ul class="video-list" id="video-list">
                 {% for video in videos %}
                 <li id="v-{{ video['id'] }}">
@@ -134,6 +135,9 @@
                 </li>
                 {% end %}
             </ul>
+            {% else %}
+            <p>没有视频</p>    
+            {% end %}
 		</div>
         <ul id="twitter_update_list" class="float_left"><li></li></ul>
         <ul class="social_icons float_right">
