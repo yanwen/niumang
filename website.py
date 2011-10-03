@@ -55,12 +55,13 @@ class Application(tornado.web.Application):
             (r"/", HomeHandler),
             (r"/upload", UploadHandler),
             (r"/status/(.*)", StatusHandler),
+            (r"/status", StatusHandler),
             (r"/setup", InitHandler)
         ]
         settings = dict(
             template_path = os.path.join(os.path.dirname(__file__), "views"),
             static_path = os.path.join(os.path.dirname(__file__), "static"),
-            xsrf_cookies = True,
+            xsrf_cookies = False,
             cookie_secret = "kL5gEmGeJJFuYh711oETzKXQAGaYdEQnp2XdTP1o/Vo=",
             debug = options.debug,
             login_url = "/login",
@@ -361,7 +362,27 @@ class StatusHandler(BaseHandler):
             }
         
         self.write(json.dumps(video))
+
+    def post(self):
+        """docstring for post"""
     
+        ids = self.get_argument('ids', [])
+
+        if ids:
+            cur = self.db.cursor()
+            cur.execute("SELECT id,status,tudou_id,picurl FROM videos WHERE id IN (%s)" % ids)
+            videos = cur.fetchall()
+
+            video_list = []
+
+            for video in videos:
+                video['status_desc'] = self.statuses[video['status']]
+                video_list.append(video)
+
+            self.write(json.dumps(video_list))
+        else:
+            self.write('')
+            
 class AuthHandler(BaseHandler, tornado.auth.GoogleMixin):
 
     @tornado.web.asynchronous
