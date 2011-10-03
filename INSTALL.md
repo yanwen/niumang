@@ -20,6 +20,7 @@
 
 # 配置nginx
 如果外部访问建议使用nginx,配置参见 nginx.example.conf 并且 使用 server.sh 运行牛芒
+
 * `./server.sh start 9001` 开启
 * `./server.sh stop 9001` 停止
 * `./server.sh restart 9001` 重启
