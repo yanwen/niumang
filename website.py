@@ -35,7 +35,7 @@ try:
 except:
     daemon = None
     
-from ext import dict_factory
+from ext import dict_factory,quotesql
 import config
 import asynctasks
 
@@ -325,9 +325,9 @@ class UploadHandler(BaseHandler):
                 'source':url,
                 'source_hash':hashlib.sha1(url).hexdigest(),
                 'format':video_info[1].split('.')[-1],
-                'title':title[:255],
+                'title':quotesql(title[:255]),
                 'channel':channel_id,
-                'desc':desc[:2000],
+                'desc':quotesql(desc[:2000]),
                 'tags':tags,
                 'status': 1,
                 'uploader':uploader,
