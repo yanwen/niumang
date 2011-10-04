@@ -76,11 +76,11 @@ def download(id, max_quality=35):
     video = get_video(id)
 
     if not video:
-        print "no video"
-        return  True
+        logging.error("no video: %s" % id)
+        return True
 
     if video['status'] > 0:
-        print "downloaded"
+        logging.error("video %s downloaded" % id)
         return True
         
     if video['source'].startswith('http://www.youtube.com') and config.YOUTUBE_USER and config.YOUTUBE_PASS:
@@ -95,7 +95,7 @@ def download(id, max_quality=35):
     logging.info(result)
     
     if result.find('HTTP Error 404') > -1:
-        logging.error("video not found: %s" % video_id)
+        logging.error("video not found: %s" % id)
         update_video(id, 'status=2')
         return False
     

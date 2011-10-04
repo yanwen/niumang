@@ -40,6 +40,9 @@
 
     function add_video(video){
 
+        if (video['picurl'].length == 0)
+            video['picurl'] = '/static/images/processing.png';
+
         var vbox = '<li id="v-'+video['id']+'">'
          +'  <div class="video-preview">'
          +'   <a class="vurl" href="#" target="_blank" >'

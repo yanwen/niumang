@@ -306,8 +306,7 @@ class UploadHandler(BaseHandler):
             tags = self.strip_tags(tags)
             channel_id = self.clean_channel_id(channel_id)
 
-            video = self.get_video(source=url)
-
+            # video = self.get_video(source=url)
             # if video:
                 # return self.write("视频已存在")
             
@@ -340,8 +339,7 @@ class UploadHandler(BaseHandler):
             if vid:
                 asynctasks.download.delay(vid)
                 video['id'] = vid
-                video = json.dumps(video)
-                self.write(video)
+                self.write(json.dumps(video))
             else:
                 self.write('未知错误')
     
@@ -381,46 +379,6 @@ class StatusHandler(BaseHandler):
             self.write(json.dumps(video_list))
         else:
             self.write('error')
-            
-class AuthHandler(BaseHandler, tornado.auth.GoogleMixin):
-
-    @tornado.web.asynchronous
-    def get(self, action='login'):
-
-        if action == 'login':
-            if self.get_argument("openid.mode", None):
-                self.get_authenticated_user(self.async_callback(self._on_auth))
-                return
-            self.authenticate_redirect()
-        elif action == 'logout':
-            self.clear_cookie('user')
-            self.redirect("/")
-        else:
-            self.redirect("/")
-
-    def _on_auth(self, user):
-        
-        if not user:
-            raise tornado.web.HTTPError(500, "Google auth failed")
-            
-        current_user = {
-            'email': user['email'],
-            'locale': user['locale'],
-        }
-
-        self.set_secure_cookie("user", tornado.escape.json_encode(current_user), expires_days=30)
-        
-        if 'Host' in self.request.headers and self.request.headers['Host'] == 'dev.niumang.com':
-            self.redirect("/")
-        else:
-            self.redirect("/admin")
-
-class DevHandler(BaseHandler):
-    """docstring for DevHandler"""
-    
-    def get(self):
-        """docstring for get"""
-        self.write(self.request.headers['Host'])
 
 class Error404Handler(BaseHandler):
     """docstring for Error404Handler"""
@@ -446,7 +404,6 @@ class InitHandler(BaseHandler):
             format VARCHAR(5),
             channel INTEGER,
             status INTEGER,
-            tudou_state INTEGER,
             tudou_id VARCHAR(255),
             picurl TEXT,
             uploader VARCHAR(255),
