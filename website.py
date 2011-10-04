@@ -339,7 +339,7 @@ class UploadHandler(BaseHandler):
             if vid:
                 asynctasks.download.delay(vid)
                 video['id'] = vid
-				video['title'] = video['title'][:30]
+                video['title'] = video['title'][:30]
                 self.write(json.dumps(video))
             else:
                 self.write('未知错误')
