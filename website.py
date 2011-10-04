@@ -79,17 +79,17 @@ class BaseHandler(tornado.web.RequestHandler):
         1:'正在下载',
         2:'下载出错',
         3:'下载完成，等待上传',
-        4:'正在上传',
-        5:'上传出错',
-        6:'上传完成',
-        7:'审核中',
-        8:'转码中',
-        9:'不存在（可能未能过审核）',
-        10:'土豆已删除',
+        4:'正在上传至土豆',
+        5:'上传土豆出错',
+        6:'上传土豆完成',
+        7:'土豆审核中',
+        8:'土豆转码中',
+        9:'不存在（可能未能通过土豆审核）',
+        10:'已被土豆删除',
         11:'等待获取信息',
         12:'正在获取信息',
         13:'获取信息出错',
-        99:'完成',
+        99:'已完成',
     }
 
     channels = [
@@ -339,6 +339,7 @@ class UploadHandler(BaseHandler):
             if vid:
                 asynctasks.download.delay(vid)
                 video['id'] = vid
+				video['title'] = video['title'][:30]
                 self.write(json.dumps(video))
             else:
                 self.write('未知错误')
