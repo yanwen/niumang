@@ -89,7 +89,11 @@ def download(id, max_quality=35):
         auth = ''
     
     logging.info("downloading: %s" % video['source'])
-    result = os.popen('python %s %s --max-quality %s -o %s/%s.%s %s' % (youtube_dl_sh, auth, max_quality, video_dir, video['id'], video['format'], video['source']))
+
+    video_file = "%s/%s.%s" % (video_dir, video['id'], video['format'])
+    
+    update_video(id, {'status':1})
+    result = os.popen('python %s %s --max-quality %s -o %s %s' % (youtube_dl_sh, auth, max_quality, video_file, video['source']))
     
     result = result.read()
     logging.info(result)
@@ -102,13 +106,17 @@ def download(id, max_quality=35):
     #update_video(id, 'status=3')
 
     update_video(id, 'status=4')
-    res = upload(video['title'], "%s.%s" % (video['id'], video['format']), video['desc'], video['channel'], video['tags'])
+    res = upload(video['title'], video_file, video['desc'], video['channel'], video['tags'])
 
     if res:
         update_video(id, "status=6,tudou_id='%s'" % res)
         get_state.delay(id)
     else:
         update_video(id, 'status=5')
+
+		
+	if config.AUTO_DELETE_TMP_VIDEO:
+		os.remove(video_file)
     
     return True
 
@@ -153,7 +161,7 @@ def upload(title, filename, content="", channel_id=1, tags="", retries = 0):
 
         c.setopt(pycurl.URL, upload_url.encode('utf-8'))
 
-        c.setopt(pycurl.HTTPPOST, [("file", (c.FORM_FILE, video_dir + '/' + str(filename)))])
+        c.setopt(pycurl.HTTPPOST, [("file", (c.FORM_FILE, str(filename)))])
         c.setopt(pycurl.HTTPHEADER, ['Authorization: %s' % auth_header])
         # c.setopt(pycurl.VERBOSE, 1)
         c.perform()
