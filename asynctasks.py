@@ -116,7 +116,10 @@ def download(id, max_quality=35):
 
 		
 	if config.AUTO_DELETE_TMP_VIDEO:
-		os.remove(video_file)
+		try:
+			os.remove(video_file)
+		except:
+			pass
     
     return True
 
