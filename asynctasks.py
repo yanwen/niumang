@@ -65,7 +65,7 @@ def update_video(id, data):
     return True
         
 @task(max_retries=2, default_retry_delay=5*60)
-def download(id, max_quality=35):
+def download(id):
     """docstring for downloader"""
     
     if os.path.isdir(video_dir) is False:
@@ -91,6 +91,13 @@ def download(id, max_quality=35):
     video_file = "%s/%s.%s" % (video_dir, video['id'], video['format'])
     
     update_video(id, {'status':1})
+
+    max_quality =  config.MAX_QUALITY
+    
+    # 5 240p, 34 360p, 35 480p, 22 720p, 37 1080p
+    if max_quality not in (5, 34, 35, 18, 22, 37):
+        max_quality = 35
+    
     result = os.popen('python %s %s --max-quality %s -o %s %s' % (youtube_dl_sh, auth, max_quality, video_file, video['source']))
     
     result = result.read()
