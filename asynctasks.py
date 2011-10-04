@@ -22,8 +22,6 @@ from celery.task import task
 import sys
 sys.path.append(os.path.join(os.path.dirname(__file__), 'lib'))
 
-from BeautifulSoup import BeautifulSoup
-
 import encodings
 encodings.aliases.aliases['gb2312'] = 'gb18030'
 encodings.aliases.aliases['gbk']    = 'gb18030'
@@ -245,8 +243,3 @@ def get_picurl(vid):
         get_picurl.retry(countdown=5*60)
 
     return True
-    
-if __name__ == "__main__":
-    logging.basicConfig(level=logging.INFO, format='%(asctime)s:%(msecs)03d %(levelname)-8s %(message)s',
-        datefmt='%m-%d %H:%M')
-    print Tudou(config.TUDOU_USER, config.TUDOU_PASS, config.TUDOU_APPKEY).get_state('DlRnXwgOl6U')
