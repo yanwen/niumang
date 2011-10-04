@@ -319,7 +319,7 @@ class UploadHandler(BaseHandler):
             video_info = video_info.read().split("\n")
 
             if len(video_info) < 2:
-                return self.write('链接有误或不支持的视频网站')
+				return self.write({'error':'链接有误或不支持的视频网站'})
             
             video = {
                 'source':url,

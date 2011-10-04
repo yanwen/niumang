@@ -126,7 +126,6 @@ def download(id, max_quality=35):
 def upload(title, filename, content="", channel_id=1, tags="", retries = 0):
     """docstring for upload"""
 
-    #content = content + u" 想看更多cool视频请访问: http://www.niumang.com"
     data = {
         'method': 'item.upload',
         'format': 'json',
