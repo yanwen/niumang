@@ -56,6 +56,8 @@ class Application(tornado.web.Application):
             (r"/upload", UploadHandler),
             (r"/status/(.*)", StatusHandler),
             (r"/status", StatusHandler),
+            (r"/recheck/(.*)", ReCheckStatusHandler),
+            (r"/download/(.*)", DownloadHandler),
             (r"/setup", InitHandler)
         ]
         settings = dict(
@@ -84,7 +86,7 @@ class BaseHandler(tornado.web.RequestHandler):
         6:'上传土豆完成',
         7:'土豆审核中',
         8:'土豆转码中',
-        9:'不存在（可能未能通过土豆审核）',
+        9:'土豆转码失败或未通过审核',
         10:'已被土豆删除',
         11:'等待获取信息',
         12:'正在获取信息',
@@ -380,6 +382,22 @@ class StatusHandler(BaseHandler):
             self.write(json.dumps(video_list))
         else:
             self.write('error')
+
+class DownloadHandler(BaseHandler):
+    """docstring for CheckStatusHandler"""
+    
+    def get(self, id):
+        """docstring for get"""
+        asynctasks.download.delay(id)
+        self.write('ok')
+        
+class ReCheckStatusHandler(BaseHandler):
+    """docstring for CheckStatusHandler"""
+    
+    def get(self, id):
+        """docstring for get"""
+        asynctasks.get_state.delay(id)
+        self.write('ok')
 
 class Error404Handler(BaseHandler):
     """docstring for Error404Handler"""

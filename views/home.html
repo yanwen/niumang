@@ -35,7 +35,22 @@
             var vid = id.split('-')[1];
             ids.push(vid)
         });
-        timer = setTimeout("check_status()", 20000); 
+        timer = setTimeout("check_status()", 20000);
+
+        $(".recheck").click(function(){
+            var id  = $(this).attr('id');
+            var vid = id.split('-')[1];
+            var t = this;
+            
+            $.get('/recheck/'+vid, {}, function(data){
+                if (data == 'ok'){
+                    $(t).hide();
+                    alert("已加入队列")
+                } else {
+                    alert("视频不存在")
+                }
+            });
+        });
     });
 
     function add_video(video){
@@ -156,6 +171,8 @@
                         <h2><a class="vurl" href="{% if video['tudou_id'] %}http://www.tudou.com/programs/view/{{ video['tudou_id'] }}/{%else%}#{%end%}" title="{{ video['title'] }}" target="_blank">{{ video['title'][:15] }}</a></h2>
                         <span><a href="{{ video['source'] }}">原地址</a></span> <br />
                         <span id="vs-{{ video['id'] }}" class="{% if video['status'] not in (2, 5, 9, 10, 13, 99) %}processing{% end %}">{{ statuses[video['status']] }}</span>
+                        <a id="r-{{ video['id'] }}" class="recheck" style="{% if video['status'] == 99 %}display:none{% end %}
+" href="javascript:void(0)">检测状态</a>
                     </div>
                 </li>
                 {% end %}

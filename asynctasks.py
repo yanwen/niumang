@@ -77,7 +77,7 @@ def download(id):
         logging.error("no video: %s" % id)
         return True
 
-    if video['status'] > 0:
+    if video['status'] not in (2, 5, 9, 10):
         logging.error("video %s downloaded" % id)
         return True
         
@@ -198,7 +198,7 @@ def upload(title, filename, content="", channel_id=1, tags="", retries = 0):
         else:
             return False
 
-@task(max_retries=5, default_retry_delay=5*60)
+@task(max_retries=10, default_retry_delay=5*60)
 def get_state(vid):
     """docstring for tudou_state_async"""
     
@@ -226,7 +226,7 @@ def get_state(vid):
     
     return True
 
-@task(max_retries=3, default_retry_delay=5*60)
+@task(max_retries=5, default_retry_delay=5*60)
 def get_picurl(vid):
     """docstring for get_picurl"""
     video = get_video(vid)
