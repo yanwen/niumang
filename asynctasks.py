@@ -77,8 +77,8 @@ def download(id):
         logging.error("no video: %s" % id)
         return True
 
-    if video['status'] not in (2, 5, 9, 10):
-        logging.error("video %s downloaded" % id)
+    if video['status'] in (2, 5, 9, 10):
+        logging.error("video %s is downloaded" % id)
         return True
         
     if video['source'].startswith('http://www.youtube.com') and config.YOUTUBE_USER and config.YOUTUBE_PASS:
@@ -87,12 +87,11 @@ def download(id):
         auth = ''
     
     logging.info("downloading: %s" % video['source'])
-
     video_file = "%s/%s.%s" % (video_dir, video['id'], video['format'])
     
-    update_video(id, {'status':1})
+    update_video(id, "status=1")
 
-    max_quality =  config.MAX_QUALITY
+    max_quality = config.MAX_QUALITY
     
     # 5 240p, 34 360p, 35 480p, 22 720p, 37 1080p
     if max_quality not in (5, 34, 35, 18, 22, 37):
@@ -118,13 +117,11 @@ def download(id):
         get_state.delay(id)
     else:
         update_video(id, 'status=5')
-
-		
-	if config.AUTO_DELETE_TMP_VIDEO:
-		try:
-			os.remove(video_file)
-		except:
-			pass
+        if config.AUTO_DELETE_TMP_VIDEO:
+            try:
+                os.remove(video_file)
+            except:
+                logging.error("delete video file failed: %s" % video_file)
     
     return True
 
