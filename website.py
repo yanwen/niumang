@@ -320,8 +320,8 @@ class UploadHandler(BaseHandler):
             video_info = os.popen("python %s --max-quality 35 -e --get-filename %s" % (youtube_dl, url))
             video_info = video_info.read().split("\n")
 
-            if len(video_info) < 2:
-				return self.write({'error':'链接有误或不支持的视频网站'})
+            if len(video_info) < 2: 
+                return self.write({'error':'链接有误或不支持的视频网站'})
             
             video = {
                 'source':url,
@@ -424,6 +424,7 @@ class InitHandler(BaseHandler):
             channel INTEGER,
             status INTEGER,
             tudou_id VARCHAR(255),
+            tudou_state VARCHAR(255),
             picurl TEXT,
             uploader VARCHAR(255),
             create_at INTEGER
