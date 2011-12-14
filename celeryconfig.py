@@ -3,12 +3,12 @@
 
 BROKER_BACKEND = "mongodb"
 BROKER_HOST = "127.0.0.1"
-BROKER_PORT = 7680
+BROKER_PORT = 27017
 
 CELERY_RESULT_BACKEND = "mongodb"
 CELERY_MONGODB_BACKEND_SETTINGS = {
     "host": "localhost",
-    "port": 7680,
+    "port": 27017,
     "database": "niumang",
     "taskmeta_collection": "celerytasks",
 }
