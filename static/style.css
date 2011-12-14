@@ -37,6 +37,7 @@ body, div, h1, h2, h3, h4, h5, h6, p, ul, ol, li, dl, dt, dd, img, form, fieldse
 		padding: 0 0 60px 30px;
 		overflow: hidden;
 		clear: both;
+                margin-bottom:80px;
 	}
 	
 	.section_bottom_panel {
