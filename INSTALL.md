@@ -7,7 +7,7 @@
 
 # 安装环境
 * celery 参见：http://www.celeryproject.org/install/ , http://ask.github.com/celery/getting-started/broker-installation.html
-* daemon: `pip install daemon`
+* daemon: `pip install python-daemon`
 * tornado 参见：http://www.tornadoweb.org
 
 # 安装牛芒
